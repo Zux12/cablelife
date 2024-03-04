@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cable Lifespan Estimator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 960px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #005f73;
+        }
+        label {
+            display: block;
+          /*  margin: 15px 0 5px;*/
+            margin-bottom: 1px; /* Reduce this value to decrease the space below each label */
+        }
+        input[type=text], input[type=password], select, input[type=number] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            display: block;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input[type=button], input[type=reset] {
+            width: calc(50% - 10px);
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            background-color: #008c9e;
+            cursor: pointer;
+        }
+        input[type=button]:hover, input[type=reset]:hover {
+            background-color: #005f73;
+        }
+        .footer {
+            font-size: 0.9em;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        select {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin: 10px 0; /* 20px top and bottom, 0 left and right */
+    margin-bottom: 5px; /* Reduce this value to decrease the space below each select */
+    display: block;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/*hover for the insulation explanation */
+.tooltip {
+        position: relative;
+        display: inline-block;
+        border-bottom: 1px dotted black; /* Optional: adds underline to indicate it's hoverable */
+        cursor: pointer; /* Indicates an interactive element */
+    }
+
+    .tooltip .tooltiptext {
+    visibility: hidden;
+    background-color: #f9f9f9;
+    color: #000;
+    text-align: left;
+    border-radius: 10px;
+    padding: 15px;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 0%; /* Align to the left edge of the parent element */
+    margin-left: 10px; /* Add some space from the left edge of the parent */
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+    opacity: 0;
+    transition: opacity 0.3s;
+    width: 1000px; /* Adjust width as needed */
+    max-width: auto; /* Maximum width */
+    font-size: 0.9em;
+    line-height: 1.6;
+    white-space: normal;
+}
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+
+/*end of hover for the insulation hover*/
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><img src="https://seeklogo.com/images/P/petronas-logo-F27480A944-seeklogo.com.png" style="width: auto; height: 59;" alt="Company Logo"> <br> Cable Lifespan Estimator</h1>
+                        
+            <label for="Copyright"><font size ="2">&copy GTS INSTRUMENT & CONTROL
+			
+            </font></label>
+        </header>
+
+        <!-- Authentication Section -->
+        <div id="authenticationSection">
+            <h2>Authentication</h2>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
+            <input type="button" value="Login" onclick="authenticate()">
+        </div>
+
+        <!-- Lifespan Estimator Section -->
+        <div id="lifespanEstimatorSection" style="display: none;">
+            <form id="lifespanForm">
+
+
+                <!-- Form content goes here -->
+
+                
+                
+                <br><br>
+                <label for="cableType">Cable Type:</label>
+            <select id="cableType" name="cableType" required>
+                <option value="" disabled selected>Select</option>
+                <option value="copper" selected>Copper</option>
+                <option value="aluminum">Aluminum</option>
+            </select><br><br>
+    
+            <label for="age">Cable Age (years):</label>
+            <select id="age" name="age" required>
+                <!-- Options for cable age -->
+                <option value="" disabled selected>Select</option>
+                <option value="50">5 year</option>
+                <option value="40">10 years</option>
+                <option value="30">20 years</option>
+                <option value="20" selected>30 years</option>
+                <option value="10">40 years</option>
+                <option value="5">more than 50 years</option>
+                <!-- Add more options as needed -->
+            </select><br><br>
+    
+            <label for="temperature">Operating Temperature (°C):</label>
+            <select id="temperature" name="temperature" required>
+                <option value="" disabled selected>Select</option>
+                <!-- Options for operating temperature -->
+                <option value="25">25°C</option>
+                <option value="30">30°C</option>
+                <option value="35">35°C</option>
+                <option value="40" selected>40°C</option>
+                <option value="50">50°C</option>
+                <option value="60">60°C</option>
+                <!-- Add more options as needed -->
+            </select><br><br>
+    
+            <label for="load">Load (% usage from rated current capacity):</label>
+            <select id="load" name="load" required>
+                <option value="" disabled selected>Select</option>
+                <!-- Options for load percentage -->
+                <option value="10">10%</option>
+                <option value="20">20%</option>
+                <option value="30">30%</option>
+                <option value="40">40%</option>
+                <option value="50">50%</option>
+                <option value="60">60%</option>
+                <option value="70">70%</option>
+                <option value="80">80%</option>
+                <option value="90" selected>90%</option>
+                <option value="100">100%</option>
+                <!-- Add more options as needed -->
+            </select><br><br>
+    
+            <label for="installationQuality">Installation Quality (proper insulation, sealing and protection):</label>
+            <select id="installationQuality" name="installationQuality" required>
+                <option value="" disabled selected>Select</option>
+                <!-- Options for installation quality -->
+                <option value="12" selected>Yes</option> //extend 30% lifespan
+                <option value="10">No</option> //reduce 25% lifespan
+                <option value="4">Not Sure</option> //reduce 10%..maybe yes maybe no..
+                <!-- Add more options as needed -->
+            </select><br><br>
+            
+            <label for="environmentalConditions">Environmental Conditions (1-10):</label>
+            <select id="environmentalConditions" name="environmentalConditions" required>
+                <option value="" disabled selected>Select</option>
+                <!-- Options for environmental conditions -->
+                <option value="1">1(Very poor)</option>
+                <option value="6" >5(Not Sure)</option>
+                <option value="10" selected>10(Best)</option>
+                <!-- Add more options as needed -->
+            </select><br><br>
+    
+            <label for="voltageType">Voltage Type:</label>
+            <select id="voltageType" name="voltageType" required>
+                <option value="" disabled selected>Select</option>
+                <option value="dc" selected>DC</option>
+                <option value="ac">AC</option>
+            </select><br><br>
+    
+            <label for="voltageLevel">Voltage Level (V):</label>
+            <select id="voltageLevel" name="voltageLevel" required>
+                <option value="" disabled selected>Select</option>
+                <!-- Options for voltage level -->
+                <option value="110" selected>110V</option>
+                <option value="220">220V</option>
+                <!-- Add more options as needed -->
+            </select><br><br>
+    
+            <label for="frequencyOfUse">Frequency of Use (hours per day):</label>
+            <select id="frequencyOfUse" name="frequencyOfUse" required>
+                <option value="" disabled selected>Select</option>
+                <!-- Options for frequency of use -->
+                <option value="24">6 hour</option>
+                <option value="18">12 hours</option>
+                <option value="12">18 hours</option>
+                <option value="6" selected>24 hours</option>
+                <!-- Add more options as needed, check back the formula -->
+            </select><br><br>
+    
+            <label for="insulationMaterial">Insulation Material:</label>
+            <select id="insulationMaterial" name="insulationMaterial" required>
+                <option value="" disabled selected>Select</option>
+                <option value="xlpe" selected>XLPE</option>
+                <option value="pvc">PVC</option>
+            </select><br><br>
+    
+            <label for="manufacturerQuality">Manufacturer and Quality (includes adopted standards ie ISO):</label>
+            <select id="manufacturerQuality" name="manufacturerQuality" required>
+                <option value="" disabled selected>Select</option>
+                <!-- Options for manufacturer quality -->
+                <option value="2" selected>High Quality (Adopt International fabrication and testing standards)</option>
+                <option value="1">Low Quality (Does not adopt any standards)</option>
+                <option value="2">Not sure</option> <!--goto high quality assuming good selection during ded-->
+                <!-- Add more options as needed -->
+            </select><br><br>
+    
+            <label for="maintenanceInspections">Maintenance and Inspections (1-10):</label>
+            <select id="maintenanceInspections" name="maintenanceInspections" required>
+                <option value="" disabled selected>Select</option>
+                <!-- Options for maintenance and inspections -->
+                <option value="1">No Maintenance</option>
+                <option value="2" selected>Timely Maintenance</option>
+                <!-- Add more options as needed -->
+            </select><br><br>
+    
+            <label for="overloadConditions">Overload Conditions (Does operating current goes beyond rated current):</label>
+            <select id="overloadConditions" name="overloadConditions" required>
+                <option value="" disabled selected>Select</option>
+                <!-- Options for overload conditions -->
+                <option value="0" selected>No</option>
+                <option value="-12">Yes (Small Overload between 10%-20% of rated current)</option> <!-- take 12 from 30% of 40 years, 50% for significant-->
+                <option value="-20">Yes (Significant Overload more than 50% of rated current)</option>
+                <option value="-16">Not sure</option> <!-- take between 12 and 20 if not sure -->
+                <!-- Add more options as needed -->
+                <!--Small Overload: If the current exceeds the rated value by a small margin (e.g., 10-20%), the reduction in cable lifetime might be moderate. In such cases, the lifetime could be reduced by 20-40%. This is because most cables have some safety margin built into their ratings.
+                Significant Overload: For larger overloads (e.g., 50% or more above the rated current), the lifetime reduction can be much more drastic. The lifetime might be reduced by 50% or more in such cases. The heat generated in such conditions accelerates insulation degradation significantly. -->
+            </select><br><br>
+    
+            <label for="aboveGround">Above Ground:</label>
+            <input type="checkbox" id="aboveGround" name="aboveGround" onclick="toggleCableDepth()"><br><br>
+            <script>
+                function toggleCableDepth() {
+                    var aboveGroundCheckbox = document.getElementById("aboveGround");
+                    var depthSelect = document.getElementById("depth");
+    
+                    if (aboveGroundCheckbox.checked) {
+                        // Checkbox is checked, disable Cable Depth select
+                        depthSelect.disabled = true;
+                        // Set depth to 0
+                        depthSelect.value = "2";
+                    } else {
+                        // Checkbox is not checked, enable Cable Depth select
+                        depthSelect.disabled = false;
+                    }
+                }
+            </script>
+    
+            <label for="depth">Cable Depth (for buried cables, meters):</label>
+            <select id="depth" name="depth" required>
+                <option value="" disabled selected>Select</option>
+                <!-- Options for cable depth -->
+                <option value="1" selected>More than 600mm</option>
+                <option value="2">Less than 600mm</option>
+                <!-- Add more options as needed -->
+            </select><br><br>
+    
+            <label for="loadCycling">Load Cycling:</label>
+                <!-- Load cycle is the amount of on and off in a day -->
+            <select id="loadCycling" name="loadCycling" required>
+                <option value="" disabled selected>Select</option>
+                <!-- Options for load cycling -->
+                <option value="5" selected>Low Load Cycling (1-3 Cycles/Day)</option>
+                <option value="3">Moderate Load Cycling (4-7 Cycles/Day)</option>
+                <option value="0">High Load Cycling (8-10 Cycles/Day)</option>
+                <!-- Add more options as needed -->
+            </select><br><br>
+    
+            <label for="externalStress">External Stress (1-10):</label>
+            <select id="externalStress" name="externalStress" required>
+                <option value="" disabled selected>Select</option>
+                <!-- Options for external stress -->
+                <option value="16" selected>Occasional Bending / Minor Vibration</option>
+                <option value="4">Frequent bending / Twisting / High Vibration</option>
+                <!-- Add more options as needed -->
+            </select><br><br>
+    
+            <label for="shieldedCable">Shielded Cable:</label>
+            <select id="shieldedCable" name="shieldedCable" required>
+                <option value="" disabled selected>Select</option>
+                <option value="false">No</option>
+                <option value="true" selected>Yes</option>
+            </select><br><br>
+    
+            
+            
+            
+            <label for="insulationResistance">Insulation Resistance (MOhms):</label>
+            <div class="tooltip" style="font-size: 10px;">info
+                <span class="tooltiptext"><strong>How Insulation Tests Impact the Lifespan of a Cable:</strong> <br>
+
+                    <br><br><strong>Detection of Deterioration:</strong> Over time, insulation can degrade due to various factors, including environmental conditions, mechanical stress, temperature fluctuations, and chemical reactions. A decrease in insulation resistance often indicates that the insulation is deteriorating. If left unchecked, this can lead to cable failures.
+                    <br><br><strong>Prevention of Failures:</strong> By detecting insulation faults early, necessary preventive measures can be taken to either repair or replace the damaged sections of the cable, thereby preventing catastrophic failures and extending the cable's lifespan.
+                    <br><br><strong>Moisture and Contaminant Ingress:</strong> Insulation tests can detect the presence of moisture or contaminants within the insulation. Both moisture and contaminants can significantly reduce insulation resistance and accelerate the degradation of the insulation material. If detected early, appropriate actions can be taken, prolonging the cable's useful life.
+                    <br><br><strong>Thermal Degradation:</strong> Excessive heating can cause the insulation to degrade faster. If the insulation test results are declining rapidly, it may indicate that the cable is being operated beyond its temperature limits.
+                    <br><br><strong>Mechanical Damage:</strong> Physical damages, such as cuts or abrasions, can compromise the insulation. Through insulation tests, such damages can be detected and addressed before they lead to more severe problems. 
+                
+                    <br><br><br>The values obtained from insulation tests provide insights into the current health of the cable's insulation. By extrapolating these values, one can make educated estimates about the potential lifespan of the cable. Here's a breakdown of how the values might impact the years of a cable's lifespan:
+
+<br><br><strong>>1000 MΩ (Excellent insulation):</strong>
+<br>Impact on Lifespan: A cable with such a high insulation resistance value is in excellent condition. It indicates that the insulation is free from significant defects, moisture, and contaminants.
+<br>Estimated Additional Lifespan: The cable can be expected to last many more years, potentially reaching or even exceeding its designed lifespan, provided other conditions remain favorable.
+<br><br><strong>500-1000 MΩ (Good insulation):</strong>
+<br>Impact on Lifespan: The cable is still in good condition, but there might be minor signs of wear or initial stages of degradation.
+<br>Estimated Additional Lifespan: With proper maintenance and monitoring, the cable can be expected to last several more years, but periodic checks should be increased to ensure the value doesn't drop rapidly.
+<br><br><strong>100-500 MΩ (Fair insulation):</strong>
+<br>Impact on Lifespan: The cable is showing signs of degradation. This range indicates that while the insulation is still functioning, there might be factors affecting its integrity, such as early stages of moisture ingress, minor mechanical damages, or the start of chemical degradation.
+<br>Estimated Additional Lifespan: The cable might have a moderate number of years left, but it will require closer monitoring, more frequent tests, and possibly some preventive measures. Depending on the rate of decline in the insulation resistance, proactive measures like partial replacements or repairs might be needed to extend its lifespan.
+<br><br><strong><100 MΩ (Poor insulation):</strong></100>
+<br>Impact on Lifespan: This value indicates severe insulation degradation. The cable is at a high risk of failure due to factors like significant moisture ingress, severe mechanical damage, or advanced stages of chemical degradation.
+<br>Estimated Additional Lifespan: The cable might have a very limited lifespan left, potentially only a few months to a couple of years, depending on the severity of the degradation. Immediate action is required, either in the form of extensive repairs or complete replacement.
+                </span>
+              </div>
+            <input type="number" id="insulationResistance" name="insulationResistance" value="1000" required><br><br>
+    
+            
+
+<br>
+
+            <input type="button" value="Estimate Lifespan" onclick="calculateLifespan()">
+                <!-- If we set aside variables like ambient conditions, cable type, and usage, we can estimate the percentage reduction in lifespan based solely on the insulation resistance values you provided. Here's a simplified estimation:
+    
+                >1000 MΩ (Excellent insulation):
+                Impact on Lifespan: No reduction. Potentially an increase in lifespan.
+                Estimated Lifespan Change: 0% reduction, possibly an increase of up to 20%.
+                500-1000 MΩ (Good insulation):
+                Impact on Lifespan: Slight reduction.
+                Estimated Lifespan Change: Approximately 10-15% reduction.
+                100-500 MΩ (Fair insulation):
+                Impact on Lifespan: Moderate reduction.
+                Estimated Lifespan Change: Around 25-40% reduction.
+                <100 MΩ (Poor insulation):
+                Impact on Lifespan: Severe reduction.
+                Estimated Lifespan Change: Between 50-80% reduction, depending on the severity. -->
+            <br>
+
+            
+    <br>			
+
+
+<br>
+                
+                <input type="reset" value="Reset">
+                <input type="button" value="Log Out" onclick="logout()">
+            </form>
+            <h2>Estimated Lifespan:</h2>
+            <p id="result"></p>
+        </div>
+
+        <div class="footer">
+            &copy; GTS INSTRUMENT & CONTROL
+        </div>
+    </div>
+
+    <script>
+        // JavaScript functions for authentication, logout, and calculateLifespan
+
+        function authenticate() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            if (username === 'Admin' && password === 'Admin') {
+                document.getElementById("authenticationSection").style.display = "none";
+                document.getElementById("lifespanEstimatorSection").style.display = "block";
+            } else {
+                alert("Authentication failed. Please try again.");
+            }
+        }
+
+        function logout() {
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+            document.getElementById("lifespanEstimatorSection").style.display = "none";
+            document.getElementById("authenticationSection").style.display = "block";
+        }
+
+        function calculateLifespan() {
+            // Implement your lifespan calculation logic here.
+            // Make sure to retrieve input values from the form, perform the calculation,
+            // and then display the result in the 'result' paragraph.
+      // Retrieve input values, including insulation resistance
+      var cableType = document.getElementById("cableType").value;
+            var age = parseFloat(document.getElementById("age").value);
+            var ageAdjustment = 0;
+            var temperature = parseFloat(document.getElementById("temperature").value);
+            var load = parseFloat(document.getElementById("load").value);
+            var installationQuality = parseFloat(document.getElementById("installationQuality").value);
+            var environmentalConditions = parseFloat(document.getElementById("environmentalConditions").value);
+            var voltageType = document.getElementById("voltageType").value;
+            var voltageLevel = parseFloat(document.getElementById("voltageLevel").value);
+            var frequencyOfUse = parseFloat(document.getElementById("frequencyOfUse").value);
+            var insulationMaterial = document.getElementById("insulationMaterial").value;
+            var manufacturerQuality = parseFloat(document.getElementById("manufacturerQuality").value);
+            var maintenanceInspections = parseFloat(document.getElementById("maintenanceInspections").value);
+            var overloadConditions = parseFloat(document.getElementById("overloadConditions").value);
+            var depth = parseFloat(document.getElementById("depth").value);
+            var loadCycling = parseFloat(document.getElementById("loadCycling").value);
+            var externalStress = parseFloat(document.getElementById("externalStress").value);
+            var shieldedCable = document.getElementById("shieldedCable").value === "true";
+            var insulationResistance = parseFloat(document.getElementById("insulationResistance").value);
+            var aboveGround = document.getElementById("aboveGround").checked;
+
+			
+			
+			    // Check if any required field is empty
+    		if (
+        	cableType === "" || isNaN(age) || isNaN(temperature) || isNaN(load) || isNaN(installationQuality) ||
+        	isNaN(environmentalConditions) || voltageType === "" || isNaN(voltageLevel) ||
+        	isNaN(frequencyOfUse) || insulationMaterial === "" || isNaN(manufacturerQuality) ||
+        	isNaN(maintenanceInspections) || isNaN(overloadConditions) || isNaN(depth) ||
+        	isNaN(loadCycling) || isNaN(externalStress) || insulationResistance === ""
+    		) 		
+			{
+        	alert("Please fill out all required fields.");
+        	return; // Stop further execution
+    		}
+			
+			    // Check if Insulation Resistance is empty
+    		if (isNaN(insulationResistance)) {
+        	alert("Please enter a value for Insulation Resistance.");
+        	return; // Stop calculation
+    		}
+			
+            // Validation for above ground cables
+            if (aboveGround) {
+                depth = 0; // Set depth to 0 for above ground cables
+            }
+
+            // Validate insulation resistance
+            if (insulationResistance <= 0) {
+                alert("Insulation Resistance must be greater than 0.");
+                return;
+            }
+
+            // Perform insulation resistance-based lifespan calculation (example)
+            var baseLifespan = (cableType === "copper") ? 30 : 20;
+            var temperaturePenalty = (temperature >= 50) ? 10 : 0;
+            var loadPenalty = (load > 80) ? 5 : 0; //reduce 25% of 40 years
+            var insulationPenalty = (insulationResistance < 1000) ? 5 : 0;
+            var agePenalty = (age > 10) ? 5 : 0; // Example: Older cables may have a penalty.
+
+            // Additional factors affecting lifespan (simplified)
+            var additionalFactors = installationQuality + environmentalConditions + manufacturerQuality +
+                maintenanceInspections + overloadConditions + loadCycling + externalStress + frequencyOfUse + ageAdjustment;
+
+            // Adjust base lifespan based on factors
+            var estimatedLifespan = baseLifespan - temperaturePenalty - loadPenalty - insulationPenalty + additionalFactors;
+
+            // Additional adjustments based on specific factors
+            if (insulationMaterial === "pvc") {
+                estimatedLifespan -= 5;
+            }
+
+            if (shieldedCable) {
+                estimatedLifespan += 5;
+            }
+
+            // Adjust lifespan based on voltage type
+            if (voltageType === "dc") {
+                // Apply adjustments for DC voltage
+                estimatedLifespan -= 2;
+            } else if (voltageType === "ac") {
+                // Apply adjustments for AC voltage
+                estimatedLifespan -= 1;
+            }
+
+            if (depth > 1) {
+                var depthReduction = (depth - 1) * 0.20; // 20% increase lifespan if depth beyond 600mm
+                estimatedLifespan -= estimatedLifespan * depthReduction;
+            }
+
+            if (age >= 10 && age < 20) {
+                ageAdjustment = -5; // Example: Reduce lifespan for cables between 10 and 20 years old.
+            } else if (age >= 20 && age < 30) {
+                ageAdjustment = -10; // Example: Reduce lifespan for cables between 20 and 30 years old.
+            } else if (age >= 30 && age < 41) {
+                ageAdjustment = -15; // Example: Reduce lifespan for cables between 20 and 30 years old.
+            }
+
+            estimatedLifespan += ageAdjustment;
+            // Display the estimated lifespan
+            document.getElementById("result").textContent = "Estimated Lifespan: " + estimatedLifespan.toFixed(2) + " years";
+        }
+
+
+
+
+
+        
+
+
+    </script>
+
+
+</body>
+</html>
+
