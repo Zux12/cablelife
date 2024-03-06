@@ -1,5 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+    <!--script for graph-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.2"></script>
+
+
+
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -123,7 +130,7 @@
             <h2>Authentication</h2>
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" value="Admin">
-            <label for="password">Password:</label>
+            <label for="password">Password: </label>
             <input type="password" id="password" name="password" value="Admin">
             <input type="button" value="Login" onclick="authenticate()">
         </div>
@@ -156,6 +163,7 @@
                 <option value="10">40 years</option>
                 <option value="5">more than 50 years</option>
                 <!-- Add more options as needed -->
+                
             </select><br><br>
     
             <label for="temperature">Operating Temperature (°C):</label>
@@ -399,8 +407,9 @@
         </div>
     </div>
 
+    <canvas id="cableConditionChart"></canvas> <!--this is where the graph will display-->
+
     <script>
-        // JavaScript functions for authentication, logout, and calculateLifespan
 
         function authenticate() {
             var username = document.getElementById("username").value;
@@ -526,7 +535,207 @@
             estimatedLifespan += ageAdjustment;
             // Display the estimated lifespan
             document.getElementById("result").textContent = "Estimated Lifespan: " + estimatedLifespan.toFixed(2) + " years";
+       
+
+
+//fix the age of the cable according to real age. new variable name is age2
+// Retrieve the selected age value from the dropdown
+var selectedAgeValue = parseInt(document.getElementById("age").value, 10);
+
+// Initialize age2 variable
+var age2;
+
+// Map the selectedAgeValue to age2 based on your specified conditions
+switch (selectedAgeValue) {
+    case 50:
+        age2 = 5;
+        break;
+    case 40:
+        age2 = 10;
+        break;
+    case 30:
+        age2 = 20;
+        break;
+    case 20:
+        age2 = 30;
+        break;
+    case 10:
+        age2 = 40;
+        break;
+    case 5:
+        age2 = 50; // Assuming "more than 50 years" means 50 for age2
+        break;
+    default:
+        age2 = 0; // Default case if nothing matches
+}
+
+console.log(age2); // This will log the calculated age2 based on the selection
+
+//end of fix variable age2
+
+
+
+
+       
+       //generate graph logic
+       var currentYear = new Date().getFullYear();
+       typicallife = 40; //40 years typical life
+    var installationYear = currentYear - age2;
+    var extendedLifeStartYear = installationYear + typicallife;
+    var endOfLifespanYear = installationYear + estimatedLifespan;
+
+    var years = [];
+    var conditions = [];
+
+    for (let year = installationYear; year <= endOfLifespanYear; year++) {
+        years.push(year);
+        
+        let cableAgeThisYear = year - installationYear;
+
+        // Determine the condition of the cable based on its age
+        let condition;
+        if (cableAgeThisYear <= 20) {
+            condition = 'Healthy';
+        } else if (cableAgeThisYear <= 30) {
+            condition = 'Middle-aged';
+        } else if (cableAgeThisYear <= 40) {
+            condition = 'Towards the end';
+        } else {
+            condition = 'Extended life';
         }
+
+        conditions.push(condition);
+    }
+
+    // Assuming you have already included Chart.js in your HTML
+
+    var ctx = document.getElementById('cableConditionChart').getContext('2d');
+    var cableConditionChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: years,
+            datasets: [{
+                label: 'Cable Condition',
+                data: conditions.map(condition => {
+                    if (condition === 'Healthy') return 100;
+                    if (condition === 'Middle-aged') return 50;
+                    if (condition === 'Towards the end') return 25;
+                    return 20; // Extended life
+                }),
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2
+            }]
+        },
+        
+        options: {
+            
+    scales: {
+        y: {
+            // Configure  y-axis as needed
+            beginAtZero: true, // Optional: to ensure the scale starts from zero
+            title: {
+                display: true,
+                text: 'Remaining Life (%)'}
+        },
+        x: {
+            // Configure  x-axis as needed
+            title: {
+                display: true,
+                text: 'Years'}
+        }
+    },
+    plugins: {
+        annotation: {
+            annotations: {
+                middleAgeLine: {
+                    type: 'line',
+                    yMin: 50,
+                    yMax: 50,
+                    borderColor: 'orange',
+                    borderWidth: 1,
+                    borderDash: [10, 10], // Makes the line dashed
+                    label: {
+                        enabled: true,
+                        content: 'Middle-aged Stage',
+                        position: 'end',
+                        backgroundColor: 'orange',
+                        color: 'white',
+                    }
+                },
+                extendedLifeLine: {
+                    type: 'line',
+                   //yMin: 5,
+                   //yMax: 50,
+                    // Position the annotation 40 years after installation:
+                //xMin: extendedLifeStartYear,
+                   //xMax: extendedLifeStartYear,
+                    borderColor: 'purple',
+                    borderWidth: 2,
+                    borderDash: [10, 5], // Makes the line dashed
+                    label: {
+                        enabled: true,
+                        content: 'Extended lifespan',
+                        position: extendedLifeStartYear,
+                        backgroundColor: 'purple',
+                        color: 'white',
+                       // yAdjust: -6, // Adjust the label position if needed
+                    },
+
+                },
+
+
+
+                typicalendoflife: {
+                    type: 'line',
+                    yMin: 25,
+                    yMax: 25,
+
+                    borderColor: 'blue',
+                    borderWidth: 1,
+                    borderDash: [10, 10], // Makes the line dashed
+                    label: {
+                        enabled: true,
+                        content: 'Typical life End',
+                        position: 'start',
+                        backgroundColor: 'blue',
+                        color: 'white',
+                        yAdjust: -10, // Move the label above the line. Adjust the value as needed.
+                        
+                    }
+                },
+
+
+                earlylife: {
+                    type: 'line',
+                    yMin: 100,
+                    yMax: 100,
+                    borderColor: 'blue',
+                    borderWidth: 1,
+                    borderDash: [10, 10], // Makes the line dashed
+                    label: {
+                        enabled: true,
+                        content: 'Early Stage',
+                        position: 'end',
+                        backgroundColor: 'blue',
+                        color: 'white',
+                    }
+                }
+                // Add more annotations as needed
+            }
+        }
+    }
+}
+
+
+    });
+    var myChart = new Chart(
+    document.getElementById('myChart'),
+    config );
+}
+       
+       
+        
 
 
 
@@ -536,6 +745,9 @@
 
 
     </script>
+<br>
+
+
 
 
 </body>
